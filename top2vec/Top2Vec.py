@@ -666,6 +666,7 @@ class Top2Vec:
                          'metric': 'cosine'}
 
         umap_model = umap.UMAP(**umap_args).fit(self.document_vectors)
+        self.my_umap_model = umap_model
 
         # find dense areas of document vectors
         logger.info('Finding dense areas of documents')
@@ -676,6 +677,7 @@ class Top2Vec:
                             'cluster_selection_method': 'eom'}
 
         cluster = hdbscan.HDBSCAN(**hdbscan_args).fit(umap_model.embedding_)
+        self.my_hdbscan = cluster
 
         # calculate topic vectors from dense areas of documents
         logger.info('Finding topics')
@@ -719,6 +721,12 @@ class Top2Vec:
         self.word_index = None
         self.serialized_word_index = None
         self.words_indexed = False
+
+    def get_internel_data(self):
+        return self.word_vectors, self.document_vectors, self.topic_vectors
+
+    def get_internel_models(self):
+        return self.my_umap_model, self.my_hdbscan
 
     def save(self, file):
         """
